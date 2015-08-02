@@ -214,9 +214,9 @@ namespace EV3CubeSolver
                 c = "D - YELLOW";
             }
 
-            else if (hue > 5 && hue < 22)
+            else if (hue > 15 && hue < 30)
             {
-                if (rgbColor.Blue >= 15 && hue > 15)
+                /*if (rgbColor.Blue >= 15 && hue > 15)
                 {
                     if (((float) rgbColor.Red)/rgbColor.Blue > 6.10f)
                         c = "R - ORANGE";
@@ -224,9 +224,10 @@ namespace EV3CubeSolver
                         c = "L - RED";
                 }
                 else
-                    c = "R - ORANGE";
+                    c = "R - ORANGE";*/
+				c = "R - ORANGE";
             }
-            else if (hue >= 22)
+            else if (hue <= 15)
             {
                 c = "L - RED";
             }
