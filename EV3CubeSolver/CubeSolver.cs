@@ -406,7 +406,7 @@ namespace EV3CubeSolver
                 switch (robotState)
                 {
                     case State.SCAN_COLORS:
-                        Buttons.Instance.LedPattern(7);
+                        Buttons.LedPattern(7);
                         ScanColors();
                         logWriter.WriteLine("");
                         logWriter.WriteLine(new string(facelets));
@@ -414,7 +414,7 @@ namespace EV3CubeSolver
                         break;
                     case State.CALC:
                         readDataWaitHandle.WaitOne();
-                        Buttons.Instance.LedPattern(9);
+                        Buttons.LedPattern(9);
                         //MotorsOff();
                         var f = new string(facelets);
                         //var f = "BFDFULUDRBULFRURULRLDUFLFBFDRDBDRFBURDFDLBULLBRUFBRBDL";
@@ -428,12 +428,12 @@ namespace EV3CubeSolver
                     case State.SOLVE:
                         if (!solution.ToUpper().StartsWith("ERR"))
                         {
-                            Buttons.Instance.LedPattern(5);
+                            Buttons.LedPattern(5);
                             Solve();
                         }
                         else
                         {
-                            Buttons.Instance.LedPattern(2);
+                            Buttons.LedPattern(2);
                         }
                         robotState = State.STOP;
                         break;
@@ -467,7 +467,7 @@ namespace EV3CubeSolver
         protected override void StopRobot()
         {
             logWriter.Close();
-            Buttons.Instance.LedPattern(0);
+            Buttons.LedPattern(0);
             MoveArm(ArmPos.PARK);
             MoveSensor(SensorPos.PARK);
             MotorsOff();

@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EV3CubeSolver", "EV3CubeSolver\EV3CubeSolver.csproj", "{58D987BB-2AA9-401B-A67E-42BE315C21E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KociembaTwoPhase", "KociembaTwoPhase\KociembaTwoPhase.csproj", "{E31637BF-7D6A-4A15-B8A9-E7C5EC168277}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoBrickFirmware", "monoev3\MonoBrickFirmware\MonoBrickFirmware.csproj", "{67261E03-D263-4C42-A5AD-2A4820231B28}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58D987BB-2AA9-401B-A67E-42BE315C21E4}.Debug|x86.ActiveCfg = Debug|x86
+		{58D987BB-2AA9-401B-A67E-42BE315C21E4}.Debug|x86.Build.0 = Debug|x86
+		{58D987BB-2AA9-401B-A67E-42BE315C21E4}.Release|x86.ActiveCfg = Release|x86
+		{58D987BB-2AA9-401B-A67E-42BE315C21E4}.Release|x86.Build.0 = Release|x86
+		{67261E03-D263-4C42-A5AD-2A4820231B28}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{67261E03-D263-4C42-A5AD-2A4820231B28}.Debug|x86.Build.0 = Debug|Any CPU
+		{67261E03-D263-4C42-A5AD-2A4820231B28}.Release|x86.ActiveCfg = Release|Any CPU
+		{67261E03-D263-4C42-A5AD-2A4820231B28}.Release|x86.Build.0 = Release|Any CPU
+		{E31637BF-7D6A-4A15-B8A9-E7C5EC168277}.Debug|x86.ActiveCfg = Debug|x86
+		{E31637BF-7D6A-4A15-B8A9-E7C5EC168277}.Debug|x86.Build.0 = Debug|x86
+		{E31637BF-7D6A-4A15-B8A9-E7C5EC168277}.Release|x86.ActiveCfg = Release|x86
+		{E31637BF-7D6A-4A15-B8A9-E7C5EC168277}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = EV3CubeSolver\EV3CubeSolver.csproj
+	EndGlobalSection
+EndGlobal
