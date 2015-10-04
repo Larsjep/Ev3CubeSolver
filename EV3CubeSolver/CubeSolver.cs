@@ -32,15 +32,17 @@ namespace EV3CubeSolver
             = new Dictionary<ArmPos, int> {{ArmPos.PARK, 0}, {ArmPos.READY, 5}, {ArmPos.HOLD, 105}, {ArmPos.FLIP, 190}};
 
         private readonly Dictionary<SensorPos, int> sensorPositions
-            = new Dictionary<SensorPos, int> { { SensorPos.PARK, 0 }, { SensorPos.READY, -400 }, { SensorPos.FIRST, -590 }, { SensorPos.SECOND, -635 }, { SensorPos.THIRD, -725 } };
+//            = new Dictionary<SensorPos, int> { { SensorPos.PARK, 0 }, { SensorPos.READY, -400 }, { SensorPos.FIRST, -590 }, { SensorPos.SECOND, -635 }, { SensorPos.THIRD, -725 } };
+			  = new Dictionary<SensorPos, int> { { SensorPos.PARK, 0 }, { SensorPos.READY, 134 }, { SensorPos.FIRST, -64 }, { SensorPos.SECOND, -125 }, { SensorPos.THIRD, -237 } };
 
         private readonly TextWriter logWriter = new StreamWriter(LogPath);
 
-        private readonly EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.In2);
+        private readonly EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.In1);
         private readonly Motor motorArm = new Motor(MotorPort.OutB);
-        private readonly Motor motorBasket = new Motor(MotorPort.OutD);
+        private readonly Motor motorBasket = new Motor(MotorPort.OutA);
         private readonly Motor motorSensor = new Motor(MotorPort.OutC);
-        private readonly EV3TouchSensor touchSensor = new EV3TouchSensor(SensorPort.In1);
+        private readonly EV3TouchSensor touchSensor = new EV3TouchSensor(SensorPort.In2);
+		int motorSensorOffset = -134;
 
         private readonly int[] scanColorSequence =
         {
@@ -62,7 +64,7 @@ namespace EV3CubeSolver
 
         private readonly ManualResetEvent readDataWaitHandle = new ManualResetEvent(false);
 
-        private State robotState = State.SCAN_COLORS;
+        private State robotState = State.ADJUST;
 
         private char down = 'D';
         private char up = 'U';
@@ -162,7 +164,7 @@ namespace EV3CubeSolver
             {
                 waitSensor.Reset();
                 int currTacho = motorSensor.GetTachoCount();
-                int move = sensorPositions[pos] - currTacho;
+                int move = sensorPositions[pos] + motorSensorOffset - currTacho;
                 sbyte speed = move < 0 ? (sbyte) -35 : (sbyte) 35;
                 /*WaitHandle waitHandle = */motorSensor.SpeedProfile(speed, 0, (uint) Math.Abs(move - 5), 5, true);
                 Task.Factory.StartNew(() =>
@@ -176,12 +178,27 @@ namespace EV3CubeSolver
                 });
             }
         }
+		
+		private void AdjustSensorPos(SensorPos pos)
+		{
+			int currTacho = motorSensor.GetTachoCount();
+            motorSensorOffset = currTacho - sensorPositions[pos];
+		}
 
         private string ScanColor()
         {
             WaitForSensorReady();
 
             RGBColor rgbColor = colorSensor.ReadRGB();
+			int max = Math.Max(Math.Max(rgbColor.Red, rgbColor.Green), rgbColor.Blue);
+			if (max > 255) // Normalize to max 255
+			{
+				rgbColor = new RGBColor(
+					(UInt16)((int)rgbColor.Red * 255 / max),  
+					(UInt16)((int)rgbColor.Green * 255 / max),  
+					(UInt16)((int)rgbColor.Blue * 255 / max));
+			}
+			
             Color color = Color.FromArgb(rgbColor.Red, rgbColor.Green, rgbColor.Blue);
             var hue = (int) color.GetHue();
             var bright = (int) (color.GetBrightness()*100);
@@ -252,7 +269,16 @@ namespace EV3CubeSolver
                     {
                         MoveSensor((i - (i/9)*9)%2 != 0 ? SensorPos.SECOND : SensorPos.FIRST);
                     }
-
+					
+					
+					/*while (true)
+					{
+						c = ScanColor();
+						Console.WriteLine(c);
+						if (touchSensor.IsPressed())
+							break;
+						Thread.Sleep(100);
+					}*/
                     while (true)
                     {
                         c = ScanColor();
@@ -260,6 +286,7 @@ namespace EV3CubeSolver
                             CalibrateSensorPosition();
                         else
                             break;
+						
                     }
                     ResetSensorPosition();
                 }
@@ -399,6 +426,67 @@ namespace EV3CubeSolver
                 logWriter.WriteLine("U:{0} D:{1} F:{2} R:{3} B{4} L:{5}", up, down, mid[0], mid[1], mid[2], mid[3]);
             }
         }
+		
+		private SensorPos GetNextPos(SensorPos p)
+		{
+			switch (p)
+			{
+				case SensorPos.READY: return SensorPos.SECOND;	
+				case SensorPos.FIRST: return SensorPos.SECOND;	
+				case SensorPos.SECOND: return SensorPos.THIRD;	
+				case SensorPos.THIRD: return SensorPos.FIRST;	
+			}
+			throw new Exception("Unexpected sensor posisition");
+		}
+		
+		private void DoAdjust()
+		{
+			SensorPos pos = SensorPos.READY;
+			motorSensor.ResetTacho();
+			MoveSensor(pos);
+			bool adjusted = false;
+			for (;;)
+			{
+				switch (Buttons.GetKeypress())
+				{
+					case Buttons.ButtonStates.Right:
+					    if (adjusted)
+					    {
+						    AdjustSensorPos(pos);
+							adjusted = false;
+					    }
+					    if (pos == SensorPos.FIRST || pos == SensorPos.THIRD)
+					    {
+							TwistBasket(true, 1, 0);
+					    }					
+					    pos = GetNextPos(pos);					  
+					    MoveSensor(pos);					    
+					    var c = ScanColor();
+						LcdConsole.WriteLine("Scan: {0}", c);
+					    break;
+					case Buttons.ButtonStates.Left:
+				        {
+					    /*var c2 = ScanColor();
+						LcdConsole.WriteLine("Scan: {0}", c2);
+					    Console.WriteLine("Scan: {0}", c2);
+						Console.WriteLine(motorSensor.GetTachoCount());*/
+						MoveSensor (SensorPos.READY);
+				        }
+					    break;
+					
+					case Buttons.ButtonStates.Up:						
+						motorSensor.SpeedProfile(25, 3, 12, 3, true);
+					    adjusted = true;
+						break;
+					case Buttons.ButtonStates.Down:
+						motorSensor.SpeedProfile(-25, 3, 12, 3, true);
+					    adjusted = true;
+						break;
+					case Buttons.ButtonStates.Enter:					
+						return;							
+				}
+			}
+		}
 
         protected override void UpdateRobot()
         {
@@ -406,6 +494,12 @@ namespace EV3CubeSolver
             {
                 switch (robotState)
                 {
+				    case State.ADJUST:
+					    LcdConsole.WriteLine("Adjust mode....");
+					    robotState = State.SCAN_COLORS;
+					    DoAdjust();
+						robotState = State.SCAN_COLORS;
+					    break;
                     case State.SCAN_COLORS:
                         Buttons.LedPattern(7);
                         ScanColors();
@@ -457,7 +551,8 @@ namespace EV3CubeSolver
                     readDataWaitHandle.Set();
                 });
                 colorSensor.Mode = ColorMode.RGB;
-                MoveSensor(SensorPos.PARK);
+                //MoveSensor(SensorPos.PARK);
+				
             }
             catch (Exception e)
             {
@@ -469,8 +564,8 @@ namespace EV3CubeSolver
         {
             logWriter.Close();
             Buttons.LedPattern(0);
-            MoveArm(ArmPos.PARK);
-            MoveSensor(SensorPos.PARK);
+            //MoveArm(ArmPos.PARK);
+            //MoveSensor(SensorPos.PARK);
             MotorsOff();
         }
 
@@ -493,6 +588,7 @@ namespace EV3CubeSolver
 
         private enum State
         {
+			ADJUST,
             SCAN_COLORS,
             CALC,
             SOLVE,
