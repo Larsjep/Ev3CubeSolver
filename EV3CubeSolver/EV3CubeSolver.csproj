@@ -5,6 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{803879AC-26C2-49B0-AAA0-0DE4A7C68C87};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{58D987BB-2AA9-401B-A67E-42BE315C21E4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>EV3CubeSolver</RootNamespace>

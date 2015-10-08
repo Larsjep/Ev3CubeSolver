@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using KociembaTwoPhase;
 using MonoBrickFirmware.Display;
-using MonoBrickFirmware.Management;
+using MonoBrickFirmware.Device;
 using MonoBrickFirmware.Movement;
 using MonoBrickFirmware.Sensors;
 using MonoBrickFirmware.UserInput;
@@ -64,7 +64,7 @@ namespace EV3CubeSolver
 
         private readonly ManualResetEvent readDataWaitHandle = new ManualResetEvent(false);
 
-        private State robotState = State.ADJUST;
+        private State robotState = State.INIT;
 
         private char down = 'D';
         private char up = 'U';
@@ -442,7 +442,6 @@ namespace EV3CubeSolver
 		private void DoAdjust()
 		{
 			SensorPos pos = SensorPos.READY;
-			motorSensor.ResetTacho();
 			MoveSensor(pos);
 			bool adjusted = false;
 			for (;;)
@@ -494,6 +493,10 @@ namespace EV3CubeSolver
             {
                 switch (robotState)
                 {
+					case State.INIT:
+						motorSensor.ResetTacho();
+						robotState = State.ADJUST;
+						break;
 				    case State.ADJUST:
 					    LcdConsole.WriteLine("Adjust mode....");
 					    robotState = State.SCAN_COLORS;
@@ -530,7 +533,7 @@ namespace EV3CubeSolver
                         {
                             Buttons.LedPattern(2);
                         }
-                        robotState = State.STOP;
+						robotState = State.ADJUST;
                         break;
                 }
             }
@@ -545,7 +548,7 @@ namespace EV3CubeSolver
             try
             {
                 MotorsOff();
-                LcdConsole.WriteLine("Battery: {0}", Battery.Voltage);
+				LcdConsole.WriteLine("Battery: {0}", Brick.BatteryVoltage());
                 Task.Factory.StartNew(() => { 
                     LcdConsole.WriteLine(CoordCube.PrunPath); //static constructor reads the prun file
                     readDataWaitHandle.Set();
@@ -588,6 +591,7 @@ namespace EV3CubeSolver
 
         private enum State
         {
+			INIT,
 			ADJUST,
             SCAN_COLORS,
             CALC,

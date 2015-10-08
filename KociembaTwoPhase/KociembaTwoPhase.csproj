@@ -5,6 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{803879AC-26C2-49B0-AAA0-0DE4A7C68C87};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{E31637BF-7D6A-4A15-B8A9-E7C5EC168277}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>KociembaTwoPhase</RootNamespace>

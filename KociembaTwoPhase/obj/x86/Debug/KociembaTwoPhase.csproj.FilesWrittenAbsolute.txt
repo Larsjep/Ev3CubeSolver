@@ -1,0 +1,5 @@
+C:\svnwork\Ev3CubeSolver\KociembaTwoPhase\obj\x86\Debug\.NETFramework,Version=v4.0.AssemblyAttribute.cs
+C:\svnwork\Ev3CubeSolver\KociembaTwoPhase\bin\Debug\KociembaTwoPhase.dll.mdb
+C:\svnwork\Ev3CubeSolver\KociembaTwoPhase\bin\Debug\KociembaTwoPhase.dll
+C:\svnwork\Ev3CubeSolver\KociembaTwoPhase\obj\x86\Debug\KociembaTwoPhase.dll
+C:\svnwork\Ev3CubeSolver\KociembaTwoPhase\obj\x86\Debug\KociembaTwoPhase.dll.mdb
