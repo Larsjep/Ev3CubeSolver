@@ -494,6 +494,18 @@ namespace EV3CubeSolver
                 switch (robotState)
                 {
 					case State.INIT:
+						motorSensor.Off();
+						//motorBasket.Off();
+					    motorArm.SetPower(-20);
+					    Thread.Sleep(1000);
+						motorArm.ResetTacho();
+						motorArm.SpeedProfile(5, 0, 5, 0, true);
+					    
+					    motorSensor.SetPower(45);
+					    Thread.Sleep(5000);
+						motorSensor.ResetTacho();
+						WaitHandle wh = motorSensor.SpeedProfile(-35, 0, 250+4*18, 5, true);
+						wh.WaitOne();						
 						motorSensor.ResetTacho();
 						robotState = State.ADJUST;
 						break;
