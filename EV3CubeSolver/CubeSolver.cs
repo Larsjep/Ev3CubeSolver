@@ -86,11 +86,13 @@ namespace EV3CubeSolver
             motorSensor.ResetTacho();
         }
 
-        private void TwistBasket(bool reverse, int quarters, int overTwist = 50)
+        private void TwistBasket(bool reverse, int quarters, int overTwist = 45)
         {
             WaitForBasketReady();
             waitBasket.Reset();
-
+			//if (!reverse && overTwist != 0)
+			//	overTwist += 5;
+				
             int move = 135*quarters - 25 + overTwist;
             sbyte speed = reverse ? (sbyte) -75 : (sbyte) 75;
             WaitHandle waitHandle = motorBasket.SpeedProfile(speed, 15, (uint) move, 10, true);
@@ -98,6 +100,7 @@ namespace EV3CubeSolver
             Task.Factory.StartNew(() =>
             {
                 waitHandle.WaitOne();
+			    Thread.Sleep(300);
                 if (overTwist != 0)
                 {
                     motorBasket.SpeedProfile((sbyte) -speed, 0, (uint) overTwist, 0, true).WaitOne();
